@@ -7,44 +7,6 @@ import (
 	"strings"
 )
 
-const DefaultLinkConfTmpl = `
-{
-  "tag": "{{name}}",
-  "protocol": "vmess",
-  "settings": {
-    "vnext": [
-      {
-        "address": "{{address}}",
-        "port": {{serverPort}},
-        "users": [
-          {
-            "id": "{{uuid}}",
-            "alterId": {{aid}},
-            "security": "{{security}}"
-          }
-        ]
-      }
-    ]
-  },
-  "streamSettings": {
-    "network": "{{network}}",
-    "security": "{{streamSecurity}}",
-    "tlsSettings": {{tls}},
-    "kcpSettings": {{kcp}},
-    "wsSettings": {{ws}},
-    "httpSettings": {{http}},
-    "quicSettings": {{quic}},
-    "mux": {
-        "enabled": {{mux}},
-        "concurrency": {{concurrency}}
-    }
-  }
-}`
-
-const DefaultLinksConfTmpl = `
-
-`
-
 type LinkConf struct {
 	name     string
 	link     v2gen.Link
