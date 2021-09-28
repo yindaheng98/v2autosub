@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"iochen.com/v2gen/v2"
 	"iochen.com/v2gen/v2/ping"
 )
@@ -34,4 +35,24 @@ func (pf *PingInfoList) Less(i, j int) bool {
 
 func (pf *PingInfoList) Swap(i, j int) {
 	(*pf)[i], (*pf)[j] = (*pf)[j], (*pf)[i]
+}
+
+func Ping(link v2gen.Link, count int, dest string) *PingInfo {
+	pi := &PingInfo{
+		Link: link,
+	}
+	status, err := link.Ping(count, dest)
+	if status.Durations == nil || len(*status.Durations) == 0 {
+		pi.Err = errors.New("all error")
+		status.Durations = &ping.DurationList{-1}
+	}
+	if err != nil {
+		pi.Err = err
+		pi.Status = &ping.Status{
+			Durations: &ping.DurationList{},
+		}
+	} else {
+		pi.Status = &status
+	}
+	return pi
 }
