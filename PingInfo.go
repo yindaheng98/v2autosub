@@ -2,8 +2,12 @@ package main
 
 import (
 	"errors"
+	"github.com/remeh/sizedwaitgroup"
 	"iochen.com/v2gen/v2"
+	"iochen.com/v2gen/v2/common/mean"
 	"iochen.com/v2gen/v2/ping"
+	"log"
+	"sort"
 )
 
 type PingInfo struct {
@@ -55,4 +59,31 @@ func Ping(link v2gen.Link, count int, dest string) *PingInfo {
 		pi.Status = &status
 	}
 	return pi
+}
+
+func PingAndSort(links []v2gen.Link, count int, dest string, threads int) PingInfoList {
+	// make ping info list
+	piList := make(PingInfoList, len(links))
+	wg := sizedwaitgroup.New(threads)
+	for i := range links {
+		wg.Add()
+		go func(i int) {
+			log.Printf("[%d/%d]Pinging %s\n", i, len(links)-1, links[i].Safe())
+			defer func() {
+				wg.Done()
+			}()
+			piList[i] = Ping(links[i], count, dest)
+		}(i)
+	}
+	wg.Wait()
+
+	for i := range piList {
+		var ok bool
+		piList[i].Duration, ok = mean.ArithmeticMean(piList[i].Status.Durations).(ping.Duration)
+		if !ok {
+			piList[i].Duration = 0
+		}
+	}
+	sort.Sort(&piList)
+	return piList
 }
