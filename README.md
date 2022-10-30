@@ -1,3 +1,5 @@
+# Archived, you can use [vmessconfig](https://github.com/yindaheng98/vmessconfig) for alternative.
+
 # v2autosub
 
 一个小小的go程序，通过订阅链接自动获取vmess订阅信息、测量连接情况、并生成包含多个outbound的负载均衡配置文件。可用于实现自动订阅+负载均衡。
